@@ -19,3 +19,5 @@ Cell* listGet(List* L, int i);
 Cell* listGet(List* L, int i) ;
 
 Cell* searchList(List* L, char* str) ;
+
+List* stol(char* s);

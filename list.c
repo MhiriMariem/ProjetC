@@ -84,3 +84,18 @@ Cell* searchList(List* L, char* str) {
     return NULL; // pas trouvé
 }
 
+List* stol(char* s) {
+    List* L = initList();
+
+    char* ch = strtok(s, "|");
+
+    while (ch != NULL) {
+        Cell* c = buildCell(ch);
+        insertFirst(L, c);
+
+        ch = strtok(NULL, "|");
+    }
+
+    return L;
+}
+
