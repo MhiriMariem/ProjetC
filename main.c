@@ -62,7 +62,7 @@ char* sha256file(char* file)
 
     return hash;
 } 
-int main(){
-hashFile("main.c","file.tmp");
-return 0;
-}
+//int main(){
+//hashFile("main.c","file.tmp");
+//return 0;
+//}
