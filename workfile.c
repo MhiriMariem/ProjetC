@@ -33,3 +33,21 @@ char* wfts(WorkFile* wf)
 
     return str;
 }
+
+WorkFile* stwf(char* ch) {
+    WorkFile* wf = malloc(sizeof(WorkFile));
+    char* tmp = strdup(ch);   // copie car strtok MODIFIE la chaîne originale
+
+    char* token = strtok(tmp, "\t");          // découpe au 1er \t → name
+    wf->name = strdup(token);
+
+    token = strtok(NULL, "\t");               // découpe au 2ème \t → hash
+    wf->hash = strcmp(token, "NULL") == 0 ? NULL : strdup(token);
+    //         si le texte est "NULL" → on remet NULL (pointeur)
+
+    token = strtok(NULL, "\t");               // découpe au 3ème \t → mode
+    wf->mode = atoi(token);                   // convertit "644" → 644
+
+    free(tmp);
+    return wf;
+}
