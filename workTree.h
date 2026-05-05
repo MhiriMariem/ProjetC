@@ -14,4 +14,8 @@ int n;
 WorkTree* initWorkTree();
 
 int inWorkTree(WorkTree* wt, char* name);
+
+int appendWorkTree(WorkTree* wt, char* name, char* hash, int mode);
+
+char* wtts(WorkTree* wt);
 #endif
