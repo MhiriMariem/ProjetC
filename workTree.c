@@ -78,3 +78,53 @@ char* wtts(WorkTree* wt) {
     // 4️⃣ On retourne la chaîne finale
     return result;
 }
+
+WorkTree* chwt(char* ch) {
+    WorkTree* wt = initWorkTree();
+    char* copy = strdup(ch);
+    char* line = strtok(copy, "\n");
+
+    while (line != NULL) {
+        if (strlen(line) > 0) {
+            WorkFile* wf = stwf(line);
+            if (wf && wt->n < wt->size) {
+                wt->tab[wt->n++] = *wf;
+                free(wf);
+            }
+        }
+        line = strtok(NULL, "\n");
+    }
+    free(copy);
+    return wt;
+}
+
+
+int wttf(WorkTree* wt, char* file) {
+    FILE* f = fopen(file, "w");
+    if (!f) return -1;
+
+    char* s = wtts(wt);
+    fputs(s, f);
+    free(s);
+    fclose(f);
+    return 0;
+}
+
+WorkTree* ftwt(char* file) {
+    FILE* f = fopen(file, "r");
+    if (!f) return NULL;
+
+    /* Lecture complète du fichier dans un buffer dynamique */
+    fseek(f, 0, SEEK_END);
+    long len = ftell(f);
+    rewind(f);
+
+    char* buf = malloc(len + 1);
+    fread(buf, 1, len, f);
+    buf[len] = '\0';
+    fclose(f);
+
+    WorkTree* wt = chwt(buf);
+    free(buf);
+    return wt;
+}

@@ -1,85 +1,100 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "workTree.h"
 
 int main() {
-    int n;
+
+    // --- Première partie : création statique ---
     WorkTree* wt = initWorkTree();
 
-    // --- Première partie : saisie et recherche ---
-    do {
-        printf("Saisir la taille du tableau : ");
-        scanf("%d", &n);
-    } while (n <= 0 || n > wt->size);
+    // Ajout manuel des fichiers
+    appendWorkTree(wt, "nour.c", "abc111", 644);
+    appendWorkTree(wt, "selmi.c", "def222", 755);
+    appendWorkTree(wt, "mhiri.c", NULL, 0);
 
-    for (int i = 0; i < n && i < wt->size; i++) {
-        char filename[256];
-        printf("Nom du fichier %d : ", i+1);
-        scanf("%255s", filename);
 
-        wt->tab[i].name = strdup(filename);
-        wt->n++;
-    }
-
-    char search[256];
-    printf("Entrez le nom d'un fichier à rechercher : ");
-    scanf("%255s", search);
+    // Recherche statique
+    char search[] = "mhiri.c";
 
     int pos = inWorkTree(wt, search);
+
     if (pos != -1)
         printf("%s trouvé à la position : %d\n", search, pos);
     else
         printf("%s n'est pas dans le WorkTree\n", search);
 
+    // --- Deuxième partie : appendWorkTree ---
+    
+    appendWorkTree(wt, "file1.c",  "abc123", 644);
+    appendWorkTree(wt, "file2.c", "def456", 755);
+    appendWorkTree(wt, "file3.c",  NULL,     0);
+
+    printf("\n===== Contenu du WorkTree (%d fichier(s)) =====\n", wt->n);
+
+    for (int i = 0; i < wt->n; i++) {
+        printf("[%d] Nom: %s | Hash: %s | Mode: %d\n",
+               i,
+               wt->tab[i].name,
+               wt->tab[i].hash ? wt->tab[i].hash : "NULL",
+               wt->tab[i].mode);
+    }
+
+    // --- Troisième partie : test wtts ---
+
+    char* str = wtts(wt);
+
+    printf("\nWorkTree en string :\n%s\n", str);
+    
+    // --- 4eme partie : test chwt ---
+
+    // Sérialisation
+    printf("Chaîne produite :\n%s\n", str);
+
+    // Reconstruction depuis la chaîne
+    WorkTree* wt2 = chwt(str);
+    printf("WorkTree reconstruit (%d fichier(s)) :\n", wt2->n);
+    for (int i = 0; i < wt2->n; i++)
+	 printf("[%d] %s | %s | %d\n",
+		   i,
+		   wt2->tab[i].name,
+		   wt2->tab[i].hash ? wt2->tab[i].hash : "NULL",
+		   wt2->tab[i].mode);
+
+
+    // --- 5eme partie : test wttf ---
+    int r = wttf(wt, "worktree.txt");
+    if (r == 0)
+        printf("WorkTree écrit dans worktree.txt\n");
+    else
+        printf("Erreur d'écriture\n");
+
+    // --- 6eme partie : test wttf ---
+    WorkTree* wt_file = ftwt("worktree.txt");
+    if (!wt_file) {
+        printf("Impossible d'ouvrir worktree.txt\n");
+        return 1;
+    }
+
+    printf("WorkTree chargé depuis fichier (%d fichier(s)) :\n", wt->n);
+    for (int i = 0; i < wt->n; i++)
+        printf("  [%d] %s | %s | %d\n",
+               i, wt->tab[i].name,
+               wt->tab[i].hash ? wt->tab[i].hash : "NULL",
+               wt->tab[i].mode);
     // --- Libération mémoire ---
+
+    free(str);
+
     for (int i = 0; i < wt->n; i++) {
         free(wt->tab[i].name);
+
+        if (wt->tab[i].hash != NULL)
+            free(wt->tab[i].hash);
     }
+
     free(wt->tab);
     free(wt);
 
-    // --- Deuxième partie : appendWorkTree ---
-
-    printf("Combien de fichiers : ");
-    scanf("%d", &n);
-
-    for (int i = 0; i < n; i++) {
-        char name[256], hash[256];
-        int mode;
-
-        printf("\n--- Fichier %d ---\n", i + 1);
-        printf("Nom  : "); scanf("%255s", name);
-        printf("Hash : "); scanf("%255s", hash);
-        printf("Mode : "); scanf("%d", &mode);
-
-        int r = appendWorkTree(wt, name, hash, mode);
-
-        if (r == 1)
-            printf("✓ '%s' ajouté avec succès.\n", name);
-        else if (r == 0)
-            printf("✗ ERREUR : '%s' existe déjà !\n", name);
-        else
-            printf("✗ ERREUR : WorkTree plein !\n");
-    }
-
-    printf("\n===== Contenu du WorkTree (%d fichier(s)) =====\n", wt->n);
-    for (int i = 0; i < wt->n; i++)
-        printf("[%d] Nom: %s | Hash: %s | Mode: %d\n",
-            i,
-            wt->tab[i].name,
-            wt->tab[i].hash ? wt->tab[i].hash : "NULL",
-            wt->tab[i].mode);
-
-
-    // --- Troisième partie : test wtts ---
-    wt = initWorkTree(); // encore une fois réutilisation
-    appendWorkTree(wt, "main.c",  "abc123", 644);
-    appendWorkTree(wt, "utils.c", "def456", 755);
-    appendWorkTree(wt, "readme",  NULL,     0);
-
-    char* str = wtts(wt);
-    printf("WorkTree en string :\n%s\n", str);
-
-    free(str);
     return 0;
 }

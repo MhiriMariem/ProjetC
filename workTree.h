@@ -18,4 +18,10 @@ int inWorkTree(WorkTree* wt, char* name);
 int appendWorkTree(WorkTree* wt, char* name, char* hash, int mode);
 
 char* wtts(WorkTree* wt);
+
+WorkTree* chwt(char* ch);
+
+int wttf(WorkTree* wt, char* file) ;
+
+WorkTree* ftwt(char* file);
 #endif

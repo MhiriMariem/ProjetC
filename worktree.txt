@@ -1,0 +1,6 @@
+nour.c	abc111	644
+selmi.c	def222	755
+mhiri.c		0
+file1.c	abc123	644
+file2.c	def456	755
+file3.c		0
